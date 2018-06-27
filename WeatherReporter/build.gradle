@@ -1,0 +1,50 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+dependencies {
+  testCompile group: 'junit', name: 'junit', version: "4.+"
+  compile 'org.jsoup:jsoup:1.7.2'
+  compile 'org.json:json:20160212'
+  compile 'com.eclipsesource.minimal-json:minimal-json:0.9.4'
+  testCompile 'org.mockito:mockito-core:1.+'
+}
+
+repositories {
+  mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'WeatherReporter/src/weatherreporter'
+        }
+		}
+    test {
+        java {
+            srcDir 'WeatherReporter/test/weatherreporter'
+        }    
+    }
+}
+
+jacocoTestReport {
+    doFirst{
+        classDirectories = fileTree(
+					dir: './build/classes/main/weatherreporter',
+					excludes: ['**/ui/*.class','**/WeatherDriver.class']
+				)
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "build/reports/coverageHtml"
+    }
+}
+
+
+task(runWeatherDriver, dependsOn: 'classes', type: JavaExec) {
+main = 'weatherreporter.WeatherDriver'
+classpath = sourceSets.main.runtimeClasspath
+}
+
+defaultTasks 'clean', 'test', 'jacocoTestReport', 'runWeatherDriver'

@@ -1,0 +1,46 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+dependencies {
+  testCompile group: 'junit', name: 'junit', version: "4.+"
+}
+
+repositories {
+  mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'LogicalProcessingUnit/src/processingunit'
+        }
+		}
+    test {
+        java {
+            srcDir 'LogicalProcessingUnit/test/processingunit'
+        }    
+    }
+}
+
+jacocoTestReport {
+    doFirst{
+        classDirectories = fileTree(
+					dir: './build/classes/main/processingunit',
+					excludes: ['**/ui/*.class','**/ProcessingUnitDriver.class']
+				)
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "build/reports/coverageHtml"
+    }
+}
+
+task(runProcessingUnitDriver, dependsOn: 'classes', type: JavaExec) {
+	main = 'processingunit.ProcessingUnitDriver'
+	classpath = sourceSets.main.runtimeClasspath
+	args '/LogicalProcessingUnit/Input/BlockInput.txt'
+}
+
+defaultTasks 'clean','test', 'jacocoTestReport','runProcessingUnitDriver'

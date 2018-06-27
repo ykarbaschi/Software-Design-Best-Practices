@@ -1,0 +1,39 @@
+apply plugin: 'java'
+apply plugin: 'jacoco'
+
+dependencies {
+  testCompile group: 'junit', name: 'junit', version: "4.+"
+}
+
+repositories {
+  mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'Fibonacci/src/Fibonacci'
+        }
+		}
+    test {
+        java {
+            srcDir 'Fibonacci/test/Fibonacci'
+        }    
+    }
+}
+
+jacocoTestReport {
+    doFirst{
+        classDirectories = fileTree(
+					dir: './build/classes/main/Fibonacci',
+				)
+    }
+
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "build/reports/coverageHtml"
+    }
+}
+
+defaultTasks 'clean', 'test', 'jacocoTestReport'
